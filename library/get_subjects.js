@@ -11,6 +11,9 @@ module.exports = {
     metadata: () => (
         {
             "name": "get_subjects",
+            "properties": {
+                "subject": { "type": "string", "required": true }
+            },
             "supportedActions": []
         }
     ),
@@ -18,12 +21,12 @@ module.exports = {
     invoke: (conversation, done) => {
 
         var mobileSdk = conversation.mobileSdk;
-        var subject = conversation.properties().Subject;
+        var subject = conversation.properties().subject;
 
-        console.log(conversation.context);
+        //console.log(conversation);
 
         // I'm not doing anything with this module yet, just setting up the infrastructure...
-        var getSubjects = LibraryService.subjects(mobileSdk, subject);
+        // var getSubjects = LibraryService.subjects(mobileSdk, subject);
 
         console.log("Before request");
 
@@ -42,13 +45,16 @@ module.exports = {
             }
             //console.log(choices);
             
-            console.log("Before reply");
+            console.log("Before reply in get_subjects");
 
             conversation.reply({
                 text: "[Dynamic] For which subject do you need a book?",
                 //choices: ["Departmental Math", "Precalculus", "Advanced Math", "Statistics", "Physics", "Chemistry", "Biology", "Astronomy"]
                 choices: choices
             });
+
+            // Update the Flow's Subject variablet to the list of subjects found.
+            //conversation.variable("Subject", choices);
 
             conversation.transition();
             done();
