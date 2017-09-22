@@ -1,0 +1,47 @@
+metadata:
+  platformVersion: "1.0"
+main: true
+name: "FinancialBotMainFlow"
+context:
+  variables:
+    subject: "Subject"
+    books: "Book"
+    iResult: "nlpresult"
+states:
+  intent:
+    component: "System.Intent"
+    properties:
+      variable: "iResult"
+      confidenceThreshold: 0.4
+    transitions:
+      actions:
+        FindBooks: "startSubjects"
+        Intent.None: "unresolved"
+  startSubjects:
+    component: "System.SetVariable"
+    properties:
+      variable: "subject"
+      value: "${iResult.value.entityMatches['Subject'][0]}"
+    transitions: {}
+  askSubject:
+    component: "get_subjects"
+    transitions: {}
+  askBook:
+    component: "System.List"
+    properties:
+      options: "${books.type.enumValues}"
+      prompt: "Here are the availble ${subject.value} books:"
+      variable: "books"
+    transitions: {}
+  printBalance:
+    component: "System.Output"
+    properties:
+      text: "The ${books.value} will be shipped to the address on record."
+    transitions:
+      return: "printBalance"
+  unresolved:
+    component: "System.Output"
+    properties:
+      text: "I have no idea what you're asking!"
+    transitions:
+      return: "unresolved"
