@@ -3,11 +3,12 @@
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 
+var request = require('request');
 var LibraryService = require('./LibraryService');
 
 module.exports = {
 
-        metadata: () => (
+    metadata: () => (
         {
             "name": "get_subjects",
             "supportedActions": []
@@ -21,14 +22,36 @@ module.exports = {
 
         console.log(conversation.context);
 
+        // I'm not doing anything with this module yet, just setting up the infrastructure...
         var getSubjects = LibraryService.subjects(mobileSdk, subject);
 
-        console.log("Before reply");
+        console.log("Before request");
 
-        conversation.reply({ text: "[Dynamic] For which subject do you need a book?",
-                             choices: ["All Mathmatics","Departmental Math", "Precalculus", "Advanced Math", "Statistics", "Physics", "Chemistry", "Biology", "Astronomy"] });
+        // Make the request to the Library microservice...
+        request('http://140.86.40.251:8080/instructional/instructors/disciplines', function (error, response, body) {
+            console.log('Status:', response.statusCode);
+            console.log('Headers:', JSON.stringify(response.headers));
+            console.log('Response:', body);
 
-        conversation.transition();
-        done();
+            // Build the choices array from the response body...
+            var choices = [];
+            var jsondata = JSON.parse(body);
+            for (var i=0; i<jsondata.length; i++){
+                choices.push(jsondata[i]);
+                console.log(jsondata[i]);    
+            }
+            //console.log(choices);
+            
+            console.log("Before reply");
+
+            conversation.reply({
+                text: "[Dynamic] For which subject do you need a book?",
+                //choices: ["Departmental Math", "Precalculus", "Advanced Math", "Statistics", "Physics", "Chemistry", "Biology", "Astronomy"]
+                choices: choices
+            });
+
+            conversation.transition();
+            done();
+        });
     }
 };
