@@ -44,6 +44,7 @@
       "variables" : {
         "subject" : "Subject",
         "books" : "Book",
+        "selectedBook" : "string",
         "iResult" : "nlpresult"
       }
     },
@@ -56,39 +57,37 @@
         },
         "transitions" : {
           "actions" : {
-            "FindBooks" : "startSubjects",
+            "FindBooks" : "askSubject",
             "Intent.None" : "unresolved"
           }
         }
       },
-      "startSubjects" : {
-        "component" : "System.SetVariable",
-        "properties" : {
-          "variable" : "subject",
-          "value" : "${iResult.value.entityMatches['Subject'][0]}"
-        },
-        "transitions" : { }
-      },
       "askSubject" : {
         "component" : "get_subjects",
+        "properties" : {
+          "subject" : "${subject.value}"
+        },
         "transitions" : { }
       },
       "askBook" : {
-        "component" : "System.List",
+        "component" : "get_books",
         "properties" : {
-          "options" : "${books.type.enumValues}",
-          "prompt" : "Here are the availble ${subject.value} books:",
-          "variable" : "books"
-        },
-        "transitions" : { }
-      },
-      "printBalance" : {
-        "component" : "System.Output",
-        "properties" : {
-          "text" : "The ${books.value} will be shipped to the address on record."
+          "selectedBook" : "${selectedBook.value}"
         },
         "transitions" : {
-          "return" : "printBalance"
+          "actions" : {
+            "confirmBookSelection" : "confirmBookSelection",
+            "selectAnotherBook" : "askSubject"
+          }
+        }
+      },
+      "confirmBookSelection" : {
+        "component" : "System.Output",
+        "properties" : {
+          "text" : "The ${selectedBook.value} will be shipped to the address on record."
+        },
+        "transitions" : {
+          "return" : "confirmBookSelection"
         }
       },
       "unresolved" : {
@@ -104,7 +103,7 @@
   } ],
   "componentServices" : [ {
     "name" : "Library",
-    "url" : "https://1cf6c616.ngrok.io:443/components",
+    "url" : "https://a1f6d439.ngrok.io:443/components",
     "version" : "1.0",
     "headers" : [ ],
     "credentials" : {

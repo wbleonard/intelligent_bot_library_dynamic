@@ -12,61 +12,85 @@ module.exports = {
         {
             "name": "get_books",
             "properties": {
-                "subject": { "type": "string", "required": true }
+                "selectedBook": { "type": "string", "required": true }
             },
-            "supportedActions": []
+            "supportedActions": [
+                "selectAnotherBook",
+                "confirmBookSelection"
+            ]
         }
     ),
 
     invoke: (conversation, done) => {
 
-        console.log("");
-        console.log("Entering get_books...");
+        console.log("\nEntering get_books...");
 
-        var mobileSdk = conversation.mobileSdk;
-        var subject = conversation.properties().subject;
+        // CC specific variables ==============================================
+        var subject = conversation.text();
+        var ccPhase = conversation.variable("bookSelectionPhase");
+        var baseURL = "http://140.86.40.251:8080/instructional/instructors/disciplines/" + subject;
+        console.log("Selected subject = " + subject);
 
-        console.log("Selected subject = " + conversation.properties().subject);
+        // ====================================================================
+        //  Check if this is the first call to the component and either 
+        //  render the UI or respond to the selected book
+        // ====================================================================
 
-        // I'm not doing anything with this module yet, just setting up the infrastructure...
-        // var getSubjects = LibraryService.subjects(mobileSdk, subject);
+        if ((ccPhase === undefined) || (ccPhase == null) || (ccPhase === '') || (ccPhase === '1')) {
 
+            // First call to CC so get book options from Library microservice =
 
-        // Make the request to the Library microservice...
-        request('http://140.86.40.251:8080/instructional/instructors/disciplines/astronomy', function (error, response, body) {
-            console.log('Status:', response.statusCode);
-            console.log('Headers:', JSON.stringify(response.headers));
-            console.log('Response:', body);
+            request(baseURL, function (error, response, body) {
+                console.log('Status:', response.statusCode);
+                console.log('Headers:', JSON.stringify(response.headers));
+                console.log('Response:', body);
 
-            var jsonBody = JSON.parse(body);
- 
-            console.log ("Records found = " + jsonBody.recordsFound);
+                var jsonBody = JSON.parse(body);
 
-            if (body.recordsFound == 0) {
+                var recordsFound = Number(jsonBody.recordsFound)
+                console.log("Records found = " + recordsFound);
 
-                conversation.reply({
-                    text: "Sorry Charlie, there are no " + subject + " books available. Try Astronomy"
-                });
+                if (recordsFound == 0) {
 
-            } else {
+                    conversation.reply({
+                        text: "Sorry Charlie, there are no " + subject + " books available. Try Astronomy."
+                    });
+                    conversation.keepTurn(true);
+                    conversation.transition("selectAnotherBook");
+                    done();
 
-                // Build the choices array from the response body...
-                var choices = [];
-                for (var i = 0; i < jsonBody.results.length; i++) {
-                    choices.push(jsonBody.results[i].title);
-                    console.log(jsonBody.results[i].title);
+                } else {
+
+                    // Build the choices array from the response body...
+                    var choices = [];
+                    for (var i = 0; i < jsonBody.results.length; i++) {
+                        choices.push(jsonBody.results[i].title);
+                        console.log(jsonBody.results[i].title);
+                    }
+
+                    console.log("Before reply in get_books:");
+
+                    conversation.reply({
+                        text: "[Dynamic] Here are the available " + subject + " books:",
+                        choices: choices    
+                    });
+
+                    conversation.keepTurn(false); // to keep the control of user input            
+                    conversation.variable("bookSelectionPhase", 2);
+                    done();
                 }
+            });
+        } else {
 
-                console.log("Before reply in get_books:");
-
-                conversation.reply({
-                    text: "[Dynamic] Here are the available " + subject + " books:",
-                    choices: choices
-                });
-            }
-
+            // Second call to CC so User is selecting a book ==================
+            console.log ("Entering get_books phase 2...");
+            var selectedBook = conversation.text();
+            console.log ("selectedBook = " + selectedBook);
+            conversation.variable("selectedBook", selectedBook);
+            //conversation.variable("bookSelectionPhase", 1);
+            conversation.keepTurn(true);
             conversation.transition("confirmBookSelection");
             done();
-        });
+        }
     }
 };

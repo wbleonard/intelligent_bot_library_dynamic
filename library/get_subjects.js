@@ -19,16 +19,22 @@ module.exports = {
     ),
 
     invoke: (conversation, done) => {
+        console.log("");
+        console.log("** Entering invoke get_subjects ***");
 
         var mobileSdk = conversation.mobileSdk;
         var subject = conversation.properties().subject;
+        console.log("subject = " + subject);
 
-        //console.log(conversation);
+        console.log(conversation);
+        console.log(conversation.text());
+        //console.log("");
+        //console.log(conversation.message().payload);
 
         // I'm not doing anything with this module yet, just setting up the infrastructure...
         // var getSubjects = LibraryService.subjects(mobileSdk, subject);
 
-        console.log("Before request");
+        console.log("Before request to get subjects");
 
         // Make the request to the Library microservice...
         request('http://140.86.40.251:8080/instructional/instructors/disciplines', function (error, response, body) {
@@ -56,7 +62,8 @@ module.exports = {
             // Update the Flow's Subject variablet to the list of subjects found.
             //conversation.variable("Subject", choices);
 
-            conversation.transition();
+            //conversation.keepTurn(false);  // to keep the control of user input
+            conversation.transition(true);
             done();
         });
     }

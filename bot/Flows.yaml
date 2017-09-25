@@ -6,6 +6,7 @@ context:
   variables:
     subject: "Subject"
     books: "Book"
+    selectedBook: "string"
     iResult: "nlpresult"
 states:
   intent:
@@ -15,30 +16,27 @@ states:
       confidenceThreshold: 0.4
     transitions:
       actions:
-        FindBooks: "startSubjects"
+        FindBooks: "askSubject"
         Intent.None: "unresolved"
-  startSubjects:
-    component: "System.SetVariable"
-    properties:
-      variable: "subject"
-      value: "${iResult.value.entityMatches['Subject'][0]}"
-    transitions: {}
   askSubject:
     component: "get_subjects"
+    properties:
+      subject: "${subject.value}"
     transitions: {}
   askBook:
-    component: "System.List"
-    properties:
-      options: "${books.type.enumValues}"
-      prompt: "Here are the availble ${subject.value} books:"
-      variable: "books"
-    transitions: {}
-  printBalance:
+    component: "get_books"
+    properties: 
+      selectedBook: "${selectedBook.value}"
+    transitions:
+      actions:
+        confirmBookSelection: "confirmBookSelection"
+        selectAnotherBook: "askSubject"
+  confirmBookSelection:
     component: "System.Output"
     properties:
-      text: "The ${books.value} will be shipped to the address on record."
+      text: "The ${selectedBook.value} will be shipped to the address on record."
     transitions:
-      return: "printBalance"
+      return: "confirmBookSelection"
   unresolved:
     component: "System.Output"
     properties:
