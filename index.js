@@ -8,4 +8,4 @@ var server = Components('/components');
 server.use(morgan('combined'));
 
 // Start the server listening..
-server.listen(process.env.SERVICE_PORT || 8888);
+server.listen(process.env.PORT || 8888);

@@ -56,3 +56,9 @@ typings/
 
 # dotenv environment variables file
 .env
+
+create-archive.sh
+ibcs-librarycc.zip
+..gitignore.un~
+.gitignore~
+
