@@ -11,33 +11,22 @@ module.exports = {
     metadata: () => (
         {
             "name": "get_subjects",
-            "properties": {
-                "subject": { "type": "string", "required": true }
-            },
             "supportedActions": []
         }
     ),
 
     invoke: (conversation, done) => {
-        console.log("");
-        console.log("** Entering invoke get_subjects ***");
 
-        var mobileSdk = conversation.mobileSdk;
-        var subject = conversation.properties().subject;
-        console.log("subject = " + subject);
+        // CC specific variables ==============================================
+        var baseURL = "http://140.86.40.251:8080/instructional/instructors/disciplines/";
 
-        console.log(conversation);
         console.log(conversation.text());
-        //console.log("");
-        //console.log(conversation.message().payload);
 
         // I'm not doing anything with this module yet, just setting up the infrastructure...
-        // var getSubjects = LibraryService.subjects(mobileSdk, subject);
-
-        console.log("Before request to get subjects");
+        // var getSubjects = LibraryService.subjects(conversation, subject);
 
         // Make the request to the Library microservice...
-        request('http://140.86.40.251:8080/instructional/instructors/disciplines', function (error, response, body) {
+        request(baseURL, function (error, response, body) {
             console.log('Status:', response.statusCode);
             console.log('Headers:', JSON.stringify(response.headers));
             console.log('Response:', body);
@@ -47,24 +36,18 @@ module.exports = {
             var jsondata = JSON.parse(body);
             for (var i=0; i<jsondata.length; i++){
                 choices.push(jsondata[i]);
-                console.log(jsondata[i]);    
+                //console.log(jsondata[i]);    
             }
-            //console.log(choices);
             
-            console.log("Before reply in get_subjects");
-
             conversation.reply({
-                text: "[Dynamic] For which subject do you need a book?",
+                text: "For which subject do you need a book?",
                 //choices: ["Departmental Math", "Precalculus", "Advanced Math", "Statistics", "Physics", "Chemistry", "Biology", "Astronomy"]
                 choices: choices
             });
 
-            // Update the Flow's Subject variablet to the list of subjects found.
-            //conversation.variable("Subject", choices);
-
-            //conversation.keepTurn(false);  // to keep the control of user input
             conversation.transition(true);
             done();
+            console.log("*** Exiting invoke get_subjects ***\n");            
         });
     }
 };

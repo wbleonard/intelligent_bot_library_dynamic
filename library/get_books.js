@@ -23,8 +23,6 @@ module.exports = {
 
     invoke: (conversation, done) => {
 
-        console.log("\nEntering get_books...");
-
         // CC specific variables ==============================================
         var subject = conversation.text();
         var ccPhase = conversation.variable("bookSelectionPhase");
@@ -58,6 +56,7 @@ module.exports = {
                     conversation.keepTurn(true);
                     conversation.transition("selectAnotherBook");
                     done();
+                    console.log("*** Exiting invoke get_subjects ***\n");    
 
                 } else {
 
@@ -68,8 +67,6 @@ module.exports = {
                         console.log(jsonBody.results[i].title);
                     }
 
-                    console.log("Before reply in get_books:");
-
                     conversation.reply({
                         text: "[Dynamic] Here are the available " + subject + " books:",
                         choices: choices    
@@ -78,6 +75,7 @@ module.exports = {
                     conversation.keepTurn(false); // to keep the control of user input            
                     conversation.variable("bookSelectionPhase", 2);
                     done();
+                    console.log("*** Exiting invoke get_subjects ***\n");                        
                 }
             });
         } else {
@@ -87,10 +85,10 @@ module.exports = {
             var selectedBook = conversation.text();
             console.log ("selectedBook = " + selectedBook);
             conversation.variable("selectedBook", selectedBook);
-            //conversation.variable("bookSelectionPhase", 1);
             conversation.keepTurn(true);
             conversation.transition("confirmBookSelection");
             done();
+            console.log("*** Exiting invoke get_subjects ***\n");                
         }
     }
 };
