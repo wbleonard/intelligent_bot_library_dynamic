@@ -1,6 +1,6 @@
 {
   "runtime":{
-    "majorVersion":"0.12"
+    "majorVersion":"4"
   },
   "command": "node index.js",
   "startupTime" : "600",
