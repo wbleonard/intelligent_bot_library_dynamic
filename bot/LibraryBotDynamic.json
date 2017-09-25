@@ -4,36 +4,10 @@
   "type" : "USER",
   "intents" : [ {
     "name" : "FindBooks",
-    "paramsList" : [ {
-      "entity" : {
-        "name" : "Subject",
-        "type" : "ENUMVALUES",
-        "enumValues" : "Book",
-        "ruleParameters" : null,
-        "parentEntity" : null,
-        "patternExpression" : null
-      },
-      "name" : "Subject",
-      "isRequired" : true,
-      "required" : true
-    } ],
+    "paramsList" : [ ],
     "type" : "NLPIntent"
   } ],
-  "entities" : [ {
-    "name" : "Subject",
-    "type" : "ENUMVALUES",
-    "enumValues" : "Book",
-    "ruleParameters" : null,
-    "parentEntity" : null,
-    "patternExpression" : null
-  }, {
-    "name" : "Book",
-    "type" : "ENUMVALUES",
-    "enumValues" : "The Cosmic Perspective - 2nd edition,Astronomy Today - 8th edition,Astronomy - A Beginner's Guide to the Universe - 5th edition",
-    "ruleParameters" : null,
-    "parentEntity" : null,
-    "patternExpression" : null
-  } ],
+  "entities" : [ ],
   "dialog" : [ {
     "metadata" : {
       "platformVersion" : "1.0"
@@ -42,8 +16,6 @@
     "name" : "FinancialBotMainFlow",
     "context" : {
       "variables" : {
-        "subject" : "Subject",
-        "books" : "Book",
         "selectedBook" : "string",
         "iResult" : "nlpresult"
       }
@@ -64,9 +36,6 @@
       },
       "askSubject" : {
         "component" : "get_subjects",
-        "properties" : {
-          "subject" : "${subject.value}"
-        },
         "transitions" : { }
       },
       "askBook" : {

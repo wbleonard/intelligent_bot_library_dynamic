@@ -4,8 +4,6 @@ main: true
 name: "FinancialBotMainFlow"
 context:
   variables:
-    subject: "Subject"
-    books: "Book"
     selectedBook: "string"
     iResult: "nlpresult"
 states:
@@ -20,8 +18,6 @@ states:
         Intent.None: "unresolved"
   askSubject:
     component: "get_subjects"
-    properties:
-      subject: "${subject.value}"
     transitions: {}
   askBook:
     component: "get_books"
