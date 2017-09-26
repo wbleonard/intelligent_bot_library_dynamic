@@ -77,6 +77,7 @@ module.exports = {
                             if (i < 3) { // The Facebook list can't handle more then 4 elements
                                 fbmList += "{\"title\":\"" + jsonBody.results[i].title + "\"," +
                                     "\"subtitle\":\"" + jsonBody.results[i].authors + "\"," +
+                                    "\"image_url\":\"" + jsonBody.results[i].cover_image + "\"," +
                                     "\"buttons\":[{ \"type\":\"postback\", \"title\":\"Buy\", \"payload\":\"" + jsonBody.results[i].title + "\"}]" +
                                     "},";
                             }
